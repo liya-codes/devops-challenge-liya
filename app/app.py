@@ -1,0 +1,12 @@
+from fastapi import FastAPI
+from app.routes import health, secret
+
+app = FastAPI()
+
+
+# app.include_router(health.router, prefix="/health", tags=["health"])
+app.include_router(secret.router, prefix="/secret", tags=["secret"])
+
+@app.get("/")
+def root():
+    return {"message": "Welcome liya's devops challenge"}

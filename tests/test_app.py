@@ -4,7 +4,7 @@ import requests
 
 
 PORT = os.getenv("PORT", "5000")          # overridable via env
-BASE = f"http://localhost:5001"         # common base URL
+BASE = f"http://localhost:{PORT}"         # common base URL
 
 
 def test_health():

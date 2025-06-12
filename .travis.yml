@@ -38,7 +38,7 @@ jobs:
         - sleep 2
       script:
         - echo "Running pytest"
-        - pytest --reruns 3 --reruns-delay 2 -q tests/*
+        - pytest -q tests/*
       after_failure:
         - echo "Tests failed removing the docker image and container" 
 

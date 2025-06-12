@@ -11,13 +11,7 @@ dynamodb = boto3.client(
     aws_access_key_id=AWS_ACCESS_KEY,
     aws_secret_access_key=AWS_SECRET_KEY
 )
-response = dynamodb.get_item(
-        TableName='devops-challenge',
-        Key={
-            'codeName': {'S': CODE_NAME}
-        }
-    )
-print(response)
+
 
 @router.get(
     "/secret",

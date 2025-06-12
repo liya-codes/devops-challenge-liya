@@ -114,4 +114,5 @@ problem was that the app container didnt load fully so couldnt connect to the se
 
 and lastely i created the docker compose and wrote the md files
 
-at the end i got the problem that i cant get the secret - meaning when i do the request to the dynamodb i cant find codeName that is equal to thedoctor.
+at the end i got the problem that i cant get the secret - meaning when i do the request to the dynamodb i cant find codeName that is equal to thedoctor. :(
+i dont know what to do about it and i dont have much time so i just submit it forgive me!!

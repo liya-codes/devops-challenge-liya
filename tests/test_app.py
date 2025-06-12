@@ -1,18 +1,29 @@
-import requests
+# tests/test_api.py
 import os
+import requests
 
-def test_health():
-    port = os.getenv("PORT", "5000")             # uses $PORT or defaults to 5000
-    url = f"http://localhost:{port}/health"
 
-    response = requests.get(url, timeout=5)      # 5-second safety timeout
-    assert response.status_code == 200
-
+PORT = os.getenv("PORT", "5000")          # overridable via env
+BASE = f"http://localhost:5001"         # common base URL
 
 
 def test_health():
-    port = os.getenv("PORT", "5000")             # uses $PORT or defaults to 5000
-    url = f"http://localhost:{port}/health"
+    """`/health` should return 200 and the expected container/project/status fields."""
+    resp = requests.get(f"{BASE}/health", timeout=5)
+    assert resp.status_code == 200
 
-    response = requests.get(url, timeout=5)      # 5-second safety timeout
-    assert response.status_code == 200
+    body = resp.json()
+    # Presence checks
+    assert body.get("status") == "healthy"
+    assert body.get("container"),  "missing 'container' field"
+    assert body.get("project"),    "missing 'project' field"
+
+
+def test_secret():
+    """`/secret` should return 200 and include a non-empty secret_code value."""
+    resp = requests.get(f"{BASE}/secret", timeout=5)
+    assert resp.status_code == 200
+
+    body = resp.json()
+    assert "secret_code" in body, "key 'secret_code' not in response"
+    assert body["secret_code"],   "'secret_code' is empty"

@@ -35,6 +35,7 @@ jobs:
         - docker build -t $DOCKER_REPO:$COMMIT_TAG -f Dockerfile .
         - echo "building the docker container with image $DOCKER_REPO:$COMMIT_TAG"
         - docker run -e PORT="$PORT" -p "$PORT:$PORT" -e AWS_REGION="$AWS_REGION" -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" -e CODE_NAME="$CODE_NAME" -e DOCKERHUB_URL="$DOCKERHUB_URL" -e GITHUB_PROJECT="$GITHUB_PROJECT" -dit "$DOCKER_REPO:$COMMIT_TAG"
+        - sleep 2
       script:
         - echo "Running pytest"
         - pytest --maxfail=1 --disable-warnings -q tests/*

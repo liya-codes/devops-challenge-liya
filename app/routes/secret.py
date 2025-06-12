@@ -4,7 +4,7 @@ from app.config import AWS_REGION, AWS_ACCESS_KEY, AWS_SECRET_KEY, CODE_NAME
 
 router = APIRouter()
 
-
+# connect to the database 
 dynamodb = boto3.client(
     'dynamodb',
     region_name=AWS_REGION,
@@ -23,16 +23,16 @@ def get_secret():
     Get the secret code from DynamoDB.
     codeName: {CODE_NAME}
     """
-
+    # request to get the item 
     response = dynamodb.get_item(
             TableName='devops-challenge',
             Key={
                 'codeName': {'S': CODE_NAME}
             }
         )
-    print(response)
+    # take out item from the response
     secret = response.get('Item')
     if secret is None:
-        # FastAPI will convert this to a JSON response with HTTP 404
+        # handle error if the secret is not in the response
         raise HTTPException(status_code=404, detail="Secret not found")
-    return {"secret_code": secret['secretCode']['S']}
+    return {"secret_code": secret['secretCode']['S']} # reutrn the needed json if the secret is found

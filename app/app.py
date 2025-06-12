@@ -3,7 +3,7 @@ from app.routes import secret, health
 
 app = FastAPI()
 
-# app.include_router(health.router, prefix="/health", tags=["health"])
+# add the routes so the fastapi app
 app.include_router(secret.router)
 app.include_router(health.router)
 

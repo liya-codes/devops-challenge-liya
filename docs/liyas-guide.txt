@@ -1,0 +1,117 @@
+
+first of all i had to make sure i have all the Prerequisites
+i created a fresh new docker hub and github accounts
+
+after that i forked the github repo that was given and i started thinking about how im gonna create this whole thing?
+also i signed up to travis ci and read a bit of their documentation.
+also as i was reading the whole assigment ihad a f like  my problem was how am i gonna push 
+some links - for me:
+
+https://app.travis-ci.com/account/repositories
+https://github.com/liya-codes/devops-challenge-liya
+
+
+my first thought was to start with a simple router that conntects to the database
+what i read: 
+https://docs.aws.amazon.com/code-library/latest/ug/python_3_dynamodb_code_examples.html
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/programming-with-python.html
+
+
+for first local run i installed venv and ran it locally - had a problem :
+".\.venv\Scripts\activate : File C:\projects\liya\devops-challenge-liya\.venv\Scripts\Activate.ps1 cannot be loaded because running scripts is disabled 
+on this system. For more information, see about_Execution_Policies at https:/go.microsoft.com/fwlink/?LinkID=135170.
+At line:1 char:1
++ .\.venv\Scripts\activate
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : SecurityError: (:) [], PSSecurityException
+    + FullyQualifiedErrorId : UnauthorizedAccess"
+
+fixed it by using the command:
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+
+after going into the venv i downloaded all the packages that are in my requirements. and i ran my basic fastapi
+that connects to the database and reads all the tables
+
+downloading packages:
+python -m pip install -r .\requirements.txt --no-cache
+
+starting fastapi:
+
+ uvicorn app.app:app --reload
+
+
+after that i added some env vars and i tried to connet to the db, created .env file and create a config.py file that will load those env vars
+after i connected to the database i tried getting the item from the needed table
+
+how to connet: https://stackoverflow.com/questions/48645867/how-to-establish-a-connection-to-dynamodb-using-python-using-boto3
+
+
+how to read an item:
+https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/client/get_item.html
+
+error: 
+botocore.exceptions.ClientError: An error occurred (ValidationException) when calling the GetItem operation: The provided key element does not match the schema
+
+
+after reading the problem i realise it can only mean 3 things:
+There is a sort key in addition to the partition key - I assumed its not the case since there is no mention to it in the assignment.
+There is no row with code_name = thedoctor. 
+There is no row named code_name.
+
+
+because it was late at night i decided to continue other things so i created my Dockerfile
+
+since i have been stucked on this problem for a few hours i decided to ask eliran and he explained to me that the row is in camelcase and it finally worked!!
+
+after elirans help i finished the get secret router and it worked
+
+after that i started working on travis ci - its my first time working with travis so i started by reading thier documentation
+https://docs.travis-ci.com/user/tutorials/tutorial-python/
+
+i tried running a basic ci and it didnt work - the problem is that the name of the file was .travis.yaml and not .travis.yml
+okay i paid for travis bc it didnt work without but now it works
+
+started by writing all the stages and what i need which is : build test and deploy
+https://docs.travis-ci.com/user/build-stages/
+
+first i started with the build stage - did it many times was not a problem
+
+now i got into the tests stage - 
+decided to use a linter like flake8 and pytest to test the application
+
+i also decided to put to seperate the linting and unit testing so i put lint before i build my image
+
+after i finished those 2 stages i tested them and they worked
+
+now its time for unit testing - im gonna use pytest
+
+at first im gonna run the container, ran into a problem that i cant give in the docker run command the --env-file so i had to put the env in travis env vars but dont worry i made sure they are locked so no one can see(the ones that are secret like access key and secret key)
+
+after i put the env vars i finished the docker run command
+
+after that i created my first pytest file -for secert route
+i created very minimal pytest files - sorr y i didnt have a lot of time!! 
+
+now for the last stage which is deploy i had to make sure my docker hub token wont be in my .env (For when i send you) and in 
+general i dont wanna expose it i put it in the travis ci env
+
+
+im getting an error while running the docker run command - i realise when i build the image in stage build the stage test does not have that image
+in gitlab ci this wont happen!!
+
+anyways i have to push the temp image and then if the image passes the unit testing i will push it to latest 
+
+i decded to do all the testing before i build since building only stage is useless
+so yea i have 3 builds now - lintin testing and build and push
+also i made my test only one file so the connection will happen once
+
+
+another problem i accured the docker in travis , when i tried to docker build and add --push it didnt have it?!?! (in gitlab ci this wont happen)
+
+another problem i get is that the pytest is giving me timeout while connecting to the container -
+problem was that the app container didnt load fully so couldnt connect to the server
+
+and lastely i created the docker compose and wrote the md files
+
+at the end i got the problem that i cant get the secret - meaning when i do the request to the dynamodb i cant find codeName that is equal to thedoctor.

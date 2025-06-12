@@ -29,7 +29,7 @@ jobs:
     - stage: "test" 
       name: "build the docker container and test the app"  
       install:
-        - pip install pytest
+        - pip install pytest requests
       before_script:
         - echo "Building $DOCKER_REPO:$COMMIT_TAG"
         - docker build -t $DOCKER_REPO:$COMMIT_TAG -f Dockerfile .

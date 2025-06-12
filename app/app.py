@@ -5,7 +5,7 @@ app = FastAPI()
 
 
 # app.include_router(health.router, prefix="/health", tags=["health"])
-app.include_router(secret.router, prefix="/secret", tags=["secret"])
+app.include_router(secret.router)
 
 @app.get("/")
 def root():

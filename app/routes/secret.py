@@ -5,10 +5,6 @@ from app.config import AWS_REGION, AWS_ACCESS_KEY, AWS_SECRET_KEY ,CODE_NAME
 
 router = APIRouter()
 
-print("AWS_REGION:", AWS_REGION)
-print("AWS_ACCESS_KEY:", AWS_ACCESS_KEY)
-print("AWS_SECRET_KEY:", AWS_SECRET_KEY)
-
 dynamodb = boto3.client(
     'dynamodb',
     region_name=AWS_REGION,
@@ -17,10 +13,26 @@ dynamodb = boto3.client(
 )
 
 
-response = dynamodb.get_item(
+@router.get(
+    "/secret",
+    summary="Get Secret",
+    description=f"Get the secret code from DynamoDB. codeName: {CODE_NAME}"
+)
+def get_secret():
+    """
+    Get the secret code from DynamoDB.
+    codeName: {CODE_NAME}
+    """
+
+    response = dynamodb.get_item(
             TableName='devops-challenge',
             Key={
-                'code_name': {'S': 'thedoctor'}
+                'codeName': {'S': CODE_NAME}
             }
         )
 
+    secret = response.get('Item')
+    if not secret:
+            return {"error": "Secret not found"}
+
+    return {"secret_code": secret['secretCode']['S']}

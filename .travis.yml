@@ -43,7 +43,7 @@ jobs:
         - RUN_OPTS="-e PORT=$PORT -p $PORT:$PORT \
               -e AWS_REGION=$AWS_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
               -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY -e CODE_NAME=$CODE_NAME " 
-        - docker run $RUN_OPTS -dit "$DOCKER_REPO:$COMMIT_TAG"
+        - docker run $RUN_OPTS -dit $DOCKER_REPO:$COMMIT_TAG
       script:
         - echo "Running pytest"
         - pytest --maxfail=1 --disable-warnings -q tests/*

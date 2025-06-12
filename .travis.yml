@@ -1,5 +1,18 @@
-language: python
-python:
-  - "3.12"
-install:
-  - pip install -r requirements.txt
+# .travis.yml
+language: minimal        # no language runtimes – we just need a shell
+services:
+  - docker               # start the Docker daemon
+
+env:
+  global:
+    - IMAGE_NAME=$DOCKER_USERNAME/myapp   # change “myapp”
+
+script:
+  # Build the container
+  - docker build -t "$IMAGE_NAME:$TRAVIS_COMMIT" .
+
+  # Log in (creds come from encrypted env-vars you set in the Travis UI)
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+  # Push the freshly built tag
+  - docker push "$IMAGE_NAME:$TRAVIS_COMMIT"

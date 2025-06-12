@@ -1,18 +1,34 @@
 # .travis.yml
-language: minimal        # no language runtimes – we just need a shell
+language: python 
 services:
-  - docker               # start the Docker daemon
+  - docker  
+
+stages:
+  - lint
+  - build
+  # - test
+  # - deploy
 
 env:
   global:
-    - IMAGE_NAME=$DOCKER_USERNAME/myapp   # change “myapp”
+    - DOCKER_REPO=liyaimages/liya-images
+    - COMMIT_TAG=${TRAVIS_COMMIT:0:7}
+    - LATEST_TAG=latest
 
-script:
-  # Build the container
-  - docker build -t "$IMAGE_NAME:$TRAVIS_COMMIT" .
+jobs:
+  include:
 
-  # Log in (creds come from encrypted env-vars you set in the Travis UI)
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-
-  # Push the freshly built tag
-  - docker push "$IMAGE_NAME:$TRAVIS_COMMIT"
+    - stage: lint
+      name: "Flake8 linting"
+      install:
+        - pip install flake8       
+      script:
+        - echo "Running linter"
+        - flake8 app/
+    
+    - stage: "build"                # naming the Tests stage
+      name: "build docker image for application"            # names the first Tests stage job
+      script:
+        - echo "Building $DOCKER_REPO:$COMMIT_TAG"
+        - docker build -t $DOCKER_REPO:$COMMIT_TAG -f Dockerfile .
+        - docker tag $DOCKER_REPO:$COMMIT_TAG $DOCKER_REPO:$LATEST_TAG

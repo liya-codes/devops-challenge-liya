@@ -1,7 +1,6 @@
 from fastapi import APIRouter
 import boto3
-import os
-from app.config import AWS_REGION, AWS_ACCESS_KEY, AWS_SECRET_KEY ,CODE_NAME
+from app.config import AWS_REGION, AWS_ACCESS_KEY, AWS_SECRET_KEY, CODE_NAME
 
 router = APIRouter()
 
@@ -33,6 +32,6 @@ def get_secret():
 
     secret = response.get('Item')
     if not secret:
-            return {"error": "Secret not found"}
+        return {"error": "Secret not found"}
 
     return {"secret_code": secret['secretCode']['S']}
